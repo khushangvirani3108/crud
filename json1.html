@@ -1,0 +1,149 @@
+<html>
+
+<head>
+    <title>JSON</title>
+</head>
+
+<body>
+
+    <table border="1">
+        <input type="text" id="userid" />
+        <tr>
+            <td>Name :-</td>
+            <td><input type="text" id="name" /></td>
+        </tr>
+        <tr>
+            <td>Email :-</td>
+            <td><input type="email" id="email" /></td>
+        </tr>
+        <tr>
+            <td>password :-</td>
+            <td><input type="password" id="password" /></td>
+        </tr>
+        <tr>
+            <td>
+                <input type="button" id="save" value="submit" onclick="save()">
+                <input type="button" id="edit" value="edit" onclick="edit()" />
+            </td>
+        </tr>
+    </table><br><br>
+
+    <table border="1">
+        <tr>
+            <td>Id</td>
+            <td>Name</td>
+            <td>Email</td>
+            <td>Password</td>
+            <td>Action</td>
+        </tr>
+        <tbody id="rec">
+
+        </tbody>
+    </table>
+    
+</body>
+
+</html>
+
+<script type="text/javascript">
+    let data = [];
+    viewdata();
+
+    function save() {
+        let name = document.getElementById('name').value;
+        let email = document.getElementById('email').value;
+        let password = document.getElementById('password').value;
+
+        let obj = {
+            userid : Math.floor(Math.random() * 9999),
+            username: name,
+            useremail: email,
+            userpassword: password
+        }
+        if (localStorage.getItem('json') === null || localStorage.getItem('json') === undefined) {
+            data.push(obj);
+            localStorage.setItem('json', JSON.stringify(data));
+        } else {
+            let val = JSON.parse(localStorage.getItem('json'));
+            val.push(obj);
+            localStorage.setItem('json', JSON.stringify(val));
+        }
+        alert("Record Successfully Added");
+        document.getElementById('name').value = "";
+        document.getElementById('email').value = "";
+        document.getElementById('password').value = "";
+        viewdata();
+    }
+
+    function viewdata(){
+        let val = JSON.parse(localStorage.getItem('json'));
+        let tbl = "";
+
+        for (let i in val) {
+            tbl += `
+                        <tr>
+                            <td>${val[i].userid}</td>
+                            <td>${val[i].username}</td>
+                            <td>${val[i].useremail}</td>
+                            <td>${val[i].userpassword}</td>
+                            <td>
+                                <button onclick="deletedata(${val[i].userid})">Delete</button>
+                                <button onclick="editdata(${val[i].userid})">Edit</button>
+                            </td>
+                        </tr>
+                    `
+        }
+        document.getElementById('rec').innerHTML = tbl;
+    }
+
+    function deletedata(id){
+        let val = JSON.parse(localStorage.getItem('json'));
+
+        console.log(val);
+        for(let i in val){
+            if(val[i].userid == id){
+                val.splice(i,1);
+            }
+            localStorage.setItem('json',JSON.stringify(val));
+        }
+
+        alert("record successfully removed");
+        viewdata();
+    }
+
+    function editdata(userid){
+        document.getElementById('save').style.display = "none";
+
+        let val = JSON.parse(localStorage.getItem('json'));
+
+        for(let i in val){
+            if(val[i].userid == userid){
+                document.getElementById('userid').value = val[i].userid;
+                document.getElementById('name').value = val[i].username;
+                document.getElementById('email').value = val[i].useremail;
+                document.getElementById('password').value = val[i].userpassword;
+            }
+        }
+    }
+
+    function edit(){
+        let id = document.getElementById('userid').value;
+        let name = document.getElementById('name').value;
+        let email = document.getElementById('email').value;
+        let password = document.getElementById('password').value;
+
+        let val = JSON.parse(localStorage.getItem('json'));
+
+        for(let i in val){
+            if(val[i].userid == id){
+                val[i].username = name;
+                val[i].useremail = email;
+                val[i].userpassword = password;
+            }
+            localStorage.setItem('json',JSON.stringify(val));
+        }
+
+        alert("Record Successfully Edited");
+        viewdata();
+    }
+</script>
